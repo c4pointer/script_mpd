@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-# created by neo
+# created by Oleg Zubak
 # Version-1.0
 
 from tkinter import (Frame, Button, Label, Text, Checkbutton, Entry, Listbox,
