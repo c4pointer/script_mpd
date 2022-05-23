@@ -104,7 +104,8 @@ class Playlist(Frame):
         # Quit button
         self.quit_btn = Button(
             self.master, text="Quit", command=self.master.quit,
-            bg=colors.quit_btn_bg, pady=5, padx=5, activebackground=colors.on_hover_btn_bg
+            bg=colors.quit_btn_bg, pady=5, padx=5,
+            activebackground=colors.on_hover_btn_bg
         )
         self.quit_btn.grid(sticky=SE, column=10, row=50)
 
@@ -116,9 +117,10 @@ class Playlist(Frame):
 
         # Checkbox - to choose the mode of playlist creation
         # By deafault it's setted to all paths (0-self.initial_state)
-        self.checkbox = Checkbutton(self.frame2, textvariable=self.path_mode,
-                                    variable=self.initial_state, command=lambda: toggle_path()
-                                    )
+        self.checkbox = Checkbutton(
+            self.frame2, textvariable=self.path_mode,
+            variable=self.initial_state, command=lambda: toggle_path()
+        )
         self.checkbox.grid()
 
         # change the mode text
@@ -129,9 +131,10 @@ class Playlist(Frame):
                 self.mode_variable.set("Single extension mode")
 
         # Ask which mode fo extension is selected
-        self.checkbox_mode = Checkbutton(self.frame2, textvariable=self.mode_variable,
-                                         variable=self.playlist_ext_mode, command=lambda: toggle_mode()
-                                         )
+        self.checkbox_mode = Checkbutton(
+            self.frame2, textvariable=self.mode_variable,
+            variable=self.playlist_ext_mode, command=lambda: toggle_mode()
+        )
         self.checkbox_mode.grid()
 
         self.extension_choose()
@@ -331,8 +334,6 @@ class Playlist(Frame):
             for i, f in enumerate(self.os_listing):
                 if os.path.isdir(self.initialdir+os.sep+(f)) == True:
                     self.directories.append(self.initialdir+os.sep+(f))
-
-        print(self.directories)
 
         if len(self.directories) > 0:
             if self.initial_state.get() == 0:
