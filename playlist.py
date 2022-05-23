@@ -322,15 +322,19 @@ class Playlist(Frame):
                                 playlist.write(str(self.initialdir) +
                                                os.sep+str(string2)+"\n")
         if self.playlist_ext_mode.get() != 0:
-            for i, f in enumerate(self.num_of_songs):
-                if os.path.isdir(self.initialdir+os.sep+(f)) == True:
-                    self.directories.append(self.initialdir+os.sep+(f))
+
+            # Loop for Multiple path and single extension
             if self.initial_state.get() == 0:
                 for i, f in enumerate(self.os_listing):
                     if os.path.isdir(self.initialdir+os.sep+(f)) == True:
                         self.directories.append(self.initialdir+os.sep+(f))
 
+            # Loop for one path and single extension
+            else:
+                self.directories = self.num_of_songs
+
         else:
+
             for i, f in enumerate(self.os_listing):
                 if os.path.isdir(self.initialdir+os.sep+(f)) == True:
                     self.directories.append(self.initialdir+os.sep+(f))
