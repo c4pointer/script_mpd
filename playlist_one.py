@@ -201,14 +201,24 @@ class Playlist(Frame):
         self.show_songs()
 
     def show_songs(self):
+
         self.frame0.destroy()
         self.frame1.destroy()
+
         self.num_of_songs = []
 
-        for i, f in enumerate(self.os_listing):
-            for ext_ind, ext_name in enumerate(main_ext):
-                if f.endswith(str(ext_name)):
+        # For one extension
+        if self.playlist_ext_mode.get() != 0:
+            for i, f in enumerate(self.os_listing):
+                if f.endswith(str(main_ext[self.selected_ext])):
                     self.num_of_songs.append(f)
+
+        # For multiple extensions
+        else:
+            for i, f in enumerate(self.os_listing):
+                for ext_ind, ext_name in enumerate(main_ext):
+                    if f.endswith(str(ext_name)):
+                        self.num_of_songs.append(f)
 
         self.num_of_songs_with_same_ext = int(len(self.num_of_songs))
         self.label_files = Label(
@@ -218,21 +228,35 @@ class Playlist(Frame):
             self.frame2, width=60, selectbackground=colors.list_extensions_bg,
             selectmode=SINGLE
         )
-        for j, songs in enumerate(self.os_listing):
-            for ext_ind1, ext_name1 in enumerate(main_ext):
-                if songs.endswith(str(ext_name1)):
+
+        if self.playlist_ext_mode.get() != 0:
+            for j, songs in enumerate(self.os_listing):
+                if songs.endswith(str(main_ext[self.selected_ext])):
                     self.list.insert(END, songs)
+        else:
+            for j, songs in enumerate(self.os_listing):
+                for ext_ind1, ext_name1 in enumerate(main_ext):
+                    if songs.endswith(str(ext_name1)):
+                        self.list.insert(END, songs)
 
         if self.num_of_songs_with_same_ext != 0:
             self.label_files = Label(
                 self.frame2, padx=20
             )
-            self.label_files["text"] = str(
-                "There are " +
-                str(self.num_of_songs_with_same_ext)+" files " +
-                "with extension " + str(list(main_ext)) +
-                " from " + str(self.total_files_num)
-            )
+            if self.playlist_ext_mode.get() != 0:
+                self.label_files["text"] = str(
+                    "There are " +
+                    str(self.num_of_songs_with_same_ext)+" files " +
+                    "with extension " + str(main_ext[self.selected_ext]) +
+                    " from " + str(self.total_files_num)
+                )
+            else:
+                self.label_files["text"] = str(
+                    "There are " +
+                    str(self.num_of_songs_with_same_ext)+" files " +
+                    "with extension " + str(list(main_ext)) +
+                    " from " + str(self.total_files_num)
+                )
             self.list.grid(row=1, column=0)
             self.label_files.grid(row=0, column=0)
             self.button = Button(
@@ -269,26 +293,46 @@ class Playlist(Frame):
         self.directories_2 = []
         self.frame.destroy()
         self.frame2.destroy()
-        for ext in main_ext:
-            if ext == main_ext:
 
-                with open(self.dir_playlist, mode="a", encoding="utf-8") as playlist:
-                    for num1, string1 in enumerate(self.os_listing):
-                        if string1.endswith(str(main_ext)):
-                            playlist.write(str(self.initialdir) +
-                                           os.sep+str(string1)+"\n")
+        if self.playlist_ext_mode.get() != 0:
+            with open(self.dir_playlist, mode="a", encoding="utf-8") as playlist:
+                for num1, string1 in enumerate(self.num_of_songs):
+                    if string1.endswith(str(main_ext[self.selected_ext])):
+                        playlist.write(str(self.initialdir) +
+                                       os.sep+str(string1)+"\n")
 
-            else:
+        else:
+            for ext in main_ext:
+                if ext == main_ext:
 
-                with open(self.dir_playlist, mode="a", encoding="utf-8") as playlist:
-                    for num2, string2 in enumerate(self.os_listing):
-                        if string2.endswith(str(ext)):
-                            playlist.write(str(self.initialdir) +
-                                           os.sep+str(string2)+"\n")
+                    with open(self.dir_playlist, mode="a", encoding="utf-8") as playlist:
+                        for num1, string1 in enumerate(self.os_listing):
+                            if string1.endswith(str(main_ext)):
+                                playlist.write(str(self.initialdir) +
+                                               os.sep+str(string1)+"\n")
 
-        for i, f in enumerate(self.os_listing):
-            if os.path.isdir(self.initialdir+os.sep+(f)) == True:
-                self.directories.append(self.initialdir+os.sep+(f))
+                else:
+
+                    with open(self.dir_playlist, mode="a", encoding="utf-8") as playlist:
+                        for num2, string2 in enumerate(self.os_listing):
+                            if string2.endswith(str(ext)):
+                                playlist.write(str(self.initialdir) +
+                                               os.sep+str(string2)+"\n")
+        if self.playlist_ext_mode.get() != 0:
+            for i, f in enumerate(self.num_of_songs):
+                if os.path.isdir(self.initialdir+os.sep+(f)) == True:
+                    self.directories.append(self.initialdir+os.sep+(f))
+            if self.initial_state.get() == 0:
+                for i, f in enumerate(self.os_listing):
+                    if os.path.isdir(self.initialdir+os.sep+(f)) == True:
+                        self.directories.append(self.initialdir+os.sep+(f))
+
+        else:
+            for i, f in enumerate(self.os_listing):
+                if os.path.isdir(self.initialdir+os.sep+(f)) == True:
+                    self.directories.append(self.initialdir+os.sep+(f))
+
+        print(self.directories)
 
         if len(self.directories) > 0:
             if self.initial_state.get() == 0:
@@ -309,11 +353,18 @@ class Playlist(Frame):
                     list_directories.append(
                         str(file_string)+os.sep+str(string))
                 else:
-                    with open(self.dir_playlist, mode="a", encoding="utf-8") as playlist:
-                        for extension in main_ext:
-                            if string.endswith(str(extension)):
-                                playlist.write(
-                                    str(file_string)+os.sep+str(string)+"\n")
+                    if self.playlist_ext_mode.get() != 0:
+                        with open(self.dir_playlist, mode="a", encoding="utf-8") as playlist:
+                            for extension in main_ext[self.selected_ext]:
+                                if string.endswith(str(extension)):
+                                    playlist.write(
+                                        str(file_string)+os.sep+str(string)+"\n")
+                    else:
+                        with open(self.dir_playlist, mode="a", encoding="utf-8") as playlist:
+                            for extension in main_ext:
+                                if string.endswith(str(extension)):
+                                    playlist.write(
+                                        str(file_string)+os.sep+str(string)+"\n")
 
         if len(list_directories) > 0:
             self.parsing_more(list_directories)
