@@ -35,7 +35,7 @@ user = str(username)  # username
 
 homedir = str(Path.home())
 
-initial_dir_music = "music"
+initial_dir_music = "Music"
 
 name_of_playlist = "mymusic"
 
